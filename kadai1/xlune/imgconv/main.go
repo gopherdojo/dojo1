@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/xlune/dojo1/kadai1/tenntenn/imgconv/cfile"
-	"github.com/xlune/dojo1/kadai1/tenntenn/imgconv/cimage"
+	"github.com/xlune/dojo1/kadai1/xlune/imgconv/cfile"
+	"github.com/xlune/dojo1/kadai1/xlune/imgconv/cimage"
 )
 
 // 引数変数セット
