@@ -1,0 +1,232 @@
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = '';
+	document.CALLGRAPH = '';
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "./cfile"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+			
+				
+				<dd><a href="#ConvDirInfo">type ConvDirInfo</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewConvDirInfo">func NewConvDirInfo(inputPath string) (ConvDirInfo, error)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#ConvDirInfo.GetFiles">func (ci *ConvDirInfo) GetFiles(inputExt string, outputExt string) ([]ConvFile, error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#ConvDirInfo.SetOutputDir">func (ci *ConvDirInfo) SetOutputDir(outputPath string) error</a></dd>
+				
+			
+				
+				<dd><a href="#ConvFile">type ConvFile</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/target/cfile.go">cfile.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+		
+		
+			
+			
+			<h2 id="ConvDirInfo">type <a href="/src/target/cfile.go?s=124:187#L2">ConvDirInfo</a>
+				<a class="permalink" href="#ConvDirInfo">&#xb6;</a>
+			</h2>
+			<p>
+ConvDirInfo 変換ディレクトリ情報
+</p>
+
+			<pre>type ConvDirInfo struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewConvDirInfo">func <a href="/src/target/cfile.go?s=357:415#L14">NewConvDirInfo</a>
+					<a class="permalink" href="#NewConvDirInfo">&#xb6;</a>
+				</h3>
+				<pre>func NewConvDirInfo(inputPath <a href="/pkg/builtin/#string">string</a>) (<a href="#ConvDirInfo">ConvDirInfo</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+NewConvDirInfo 新規変換ディレクトリ情報作成
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="ConvDirInfo.GetFiles">func (*ConvDirInfo) <a href="/src/target/cfile.go?s=1137:1223#L51">GetFiles</a>
+					<a class="permalink" href="#ConvDirInfo.GetFiles">&#xb6;</a>
+				</h3>
+				<pre>func (ci *<a href="#ConvDirInfo">ConvDirInfo</a>) GetFiles(inputExt <a href="/pkg/builtin/#string">string</a>, outputExt <a href="/pkg/builtin/#string">string</a>) ([]<a href="#ConvFile">ConvFile</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+GetFiles 変換ファイルパスセット取得
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="ConvDirInfo.SetOutputDir">func (*ConvDirInfo) <a href="/src/target/cfile.go?s=702:762#L31">SetOutputDir</a>
+					<a class="permalink" href="#ConvDirInfo.SetOutputDir">&#xb6;</a>
+				</h3>
+				<pre>func (ci *<a href="#ConvDirInfo">ConvDirInfo</a>) SetOutputDir(outputPath <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+SetOutputDir 出力ディレクトリ指定
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="ConvFile">type <a href="/src/target/cfile.go?s=232:294#L8">ConvFile</a>
+				<a class="permalink" href="#ConvFile">&#xb6;</a>
+			</h2>
+			<p>
+ConvFile 変換ファイルパス情報
+</p>
+
+			<pre>type ConvFile struct {
+<span id="ConvFile.InputFile"></span>    InputFile  <a href="/pkg/builtin/#string">string</a>
+<span id="ConvFile.OutputFile"></span>    OutputFile <a href="/pkg/builtin/#string">string</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
