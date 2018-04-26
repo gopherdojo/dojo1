@@ -1,17 +1,12 @@
-# 課題2
+# conv_img
 
-## 課題2-1
+[![CircleCI](https://circleci.com/gh/matsu0228/go_sandbox.svg?style=svg)](https://circleci.com/gh/matsu0228/go_sandbox)
 
-io.Readerとio.Writerについて調べてみよう。
-
-* 標準パッケージでどのように使われているか
-* io.Readerとio.Writerがあることでどういう利点があるのか具体例を挙げて考えてみる
-
-## 課題2-2
-
-課題1のテストを作ってみて下さい。
-
-* テストのしやすさを考えてリファクタリングしてみる
-* テストのカバレッジを取ってみる
-* テーブル駆動テストを行う
-* テストヘルパーを作ってみる
+* sample command
+  * 下記で、画像変換ができるコマンド
+```
+conv_img -d *your_dir* ( -f *from_format:dest_format* )
+```
+* option
+  * d: 必須。指定したディレクトリ配下を再帰的に処理する
+  * f: デフォルト=jpg:png。変換前の形式と変換後の形式を指定できる
