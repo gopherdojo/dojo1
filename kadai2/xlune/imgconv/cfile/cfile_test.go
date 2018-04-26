@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/spf13/afero"
-	. "github.com/xlune/dojo1/kadai2/tenntenn/imgconv/cfile"
+	. "github.com/xlune/dojo1/kadai2/xlune/imgconv/cfile"
 )
 
 var flgNewConvDirInfo = []struct {

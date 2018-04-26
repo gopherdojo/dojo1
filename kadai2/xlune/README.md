@@ -29,10 +29,10 @@ io.Readerとio.Writerについて調べてみよう。
 
 ### テストのカバレッジ
 ```
-> go test -coverprofile=cfile github.com/xlune/dojo1/kadai2/tenntenn/imgconv/cfile                       
-ok  	github.com/xlune/dojo1/kadai2/tenntenn/imgconv/cfile	0.025s	coverage: 81.6% of statements
+> go test -coverprofile=cfile github.com/xlune/dojo1/kadai2/xlune/imgconv/cfile                       
+ok  	github.com/xlune/dojo1/kadai2/xlune/imgconv/cfile	0.025s	coverage: 81.6% of statements
 
-> go test -coverprofile=cimage github.com/xlune/dojo1/kadai2/tenntenn/imgconv/cimage
-ok  	github.com/xlune/dojo1/kadai2/tenntenn/imgconv/cimage	0.027s	coverage: 82.1% of statements
+> go test -coverprofile=cimage github.com/xlune/dojo1/kadai2/xlune/imgconv/cimage
+ok  	github.com/xlune/dojo1/kadai2/xlune/imgconv/cimage	0.027s	coverage: 82.1% of statements
 ```
 (※ファイルの作成失敗やイメージ変換失敗処理のコード辺りがカバーしきれていない状況です)
