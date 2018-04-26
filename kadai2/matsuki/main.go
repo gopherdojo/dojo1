@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	convimg "github.com/matsu0228/go_sandbox/02_convimg_test/convimg"
+	convimg "./convimg"
 )
 
 var (

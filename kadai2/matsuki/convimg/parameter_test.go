@@ -3,7 +3,7 @@ package convimg_test
 import (
 	"testing"
 
-	convimg "github.com/matsu0228/go_sandbox/02_convimg_test/convimg"
+	convimg "./"
 )
 
 var validPramTests = []struct {
@@ -12,11 +12,11 @@ var validPramTests = []struct {
 	srcFormat  string
 	destFormat string
 }{
-	{"jpgTopng", "./testdata", "jpg", "png"}, {"jpgTogif", "./", "jpg", "gif"},
-	{"jpegTopng", "./", "jpeg", "png"}, {"jpegTogif", "./testdata", "jpeg", "gif"},
-	{"pngTojpg", "./testdata", "png", "jpg"}, {"pngTogif", "./testdata", "png", "gif"},
-	{"gitTojpeg", "./", "gif", "jpeg"}, {"gifTopng", "./testdata", "gif", "png"},
-	{"anyTojpeg", "./", "*", "jpeg"}, {"anyTopng", "./testdata", "*", "png"},
+	{"jpgTopng", "./../testdata", "jpg", "png"}, {"jpgTogif", "./../", "jpg", "gif"},
+	{"jpegTopng", "./../", "jpeg", "png"}, {"jpegTogif", "./../testdata", "jpeg", "gif"},
+	{"pngTojpg", "./../testdata", "png", "jpg"}, {"pngTogif", "./../testdata", "png", "gif"},
+	{"gitTojpeg", "./../", "gif", "jpeg"}, {"gifTopng", "./../testdata", "gif", "png"},
+	{"anyTojpeg", "./../", "*", "jpeg"}, {"anyTopng", "./../testdata", "*", "png"},
 }
 
 var invalidPramTests = []struct {

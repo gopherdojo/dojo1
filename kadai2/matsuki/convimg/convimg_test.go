@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	convimg "github.com/matsu0228/go_sandbox/02_convimg_test/convimg"
+	convimg "./"
 )
 
 // TestMail is initial Execute in this tests.
@@ -38,9 +38,9 @@ func initTestImages() {
 		srcFormat  string
 		destFormat string
 	}{
-		{"./testdata/jpeg", "*", "jpeg"},
-		{"./testdata/png", "*", "png"},
-		{"./testdata/gif", "*", "gif"},
+		{"./../testdata/jpeg", "*", "jpeg"},
+		{"./../testdata/png", "*", "png"},
+		{"./../testdata/gif", "*", "gif"},
 	}
 
 	for _, c := range commands {
@@ -61,9 +61,9 @@ func TestConvImages(t *testing.T) {
 		srcFormat  string
 		destFormat string
 	}{
-		{"./testdata/jpeg", "jpeg", "png"},
-		{"./testdata/jpeg", "png", "gif"},
-		{"./testdata/", "gif", "jpeg"},
+		{"./../testdata/jpeg", "jpeg", "png"},
+		{"./../testdata/jpeg", "png", "gif"},
+		{"./../testdata/", "gif", "jpeg"},
 	}
 
 	for _, c := range commands {
