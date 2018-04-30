@@ -20,7 +20,9 @@ func MakeWords(wordListPath string) ([]string, error) {
 	var words []string
 	for {
 		line, _, err := reader.ReadLine()
-		words = append(words, string(line))
+		if len(line) > 0 {
+			words = append(words, string(line))
+		}
 		if err == io.EOF {
 			break
 		} else if err != nil {
