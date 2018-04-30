@@ -5,24 +5,34 @@ import (
 	"os"
 	"fmt"
 	"bufio"
+	"time"
 )
 
 func main() {
 	ch := input(os.Stdin)
 
 	questions := []string{"a", "b", "c", "d", "e", "f"}
+	timeChan := time.NewTimer(10 * time.Second).C
 
 	for _, v := range questions {
 		fmt.Printf("type %s\n", v)
+		Loop:
 		for {
 			fmt.Print(">")
-			if <-ch == v {
-				fmt.Println("ええで")
-				break
-			} else {
-				fmt.Println("あかんで")
-				fmt.Printf("type %s\n", v)
+			select {
+			case <-timeChan:
+				fmt.Println("Timer expired")
+				return
+			case s := <-ch:
+				if s == v {
+					fmt.Println("ええで")
+					break Loop
+				} else {
+					fmt.Println("あかんで")
+					fmt.Printf("type %s\n", v)
+				}
 			}
+
 		}
 	}
 	fmt.Println("おしまい")
