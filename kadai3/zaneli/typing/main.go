@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -27,5 +28,13 @@ func main() {
 	}
 
 	t := typing.NewTyping(words)
-	t.Run(time.Duration(limit))
+	result := t.Run(time.Duration(limit))
+	switch result.Status {
+	case typing.ResultClear:
+		fmt.Printf("Clear! 正解=%d, 不正解=%d.\n", result.Corrects, result.Incorrects)
+	case typing.ResultCancel:
+		fmt.Printf("Cancel... 正解=%d, 不正解=%d.\n", result.Corrects, result.Incorrects)
+	case typing.ResultTimeOver:
+		fmt.Printf("Time over... 正解=%d, 不正解=%d.\n", result.Corrects, result.Incorrects)
+	}
 }
