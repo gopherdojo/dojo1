@@ -6,6 +6,7 @@ import (
 	"time"
 	"fmt"
 	"bufio"
+	"github.com/toshi0607/dojo1/kadai3/toshi0607/word"
 )
 
 type Game struct {
@@ -15,10 +16,14 @@ type Game struct {
 func (g *Game) Run() int {
 	ch := input(os.Stdin)
 
-	questions := []string{"a", "b", "c", "d", "e", "f"}
-	timeChan := time.NewTimer(10 * time.Second).C
+	words, err := word.GetWords()
+	if err != nil {
+		fmt.Println(err)
+		return 1
+	}
+	timeChan := time.NewTimer(30 * time.Second).C
 
-	for _, v := range questions {
+	for _, v := range words {
 		fmt.Printf("type %s\n", v)
 	Loop:
 		for {
