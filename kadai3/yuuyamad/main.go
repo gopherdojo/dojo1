@@ -6,32 +6,69 @@ import (
 	"time"
 	"bufio"
 	"strconv"
+	"flag"
 )
 
 func main() {
 
+	var (
+		seconds = flag.Duration("t", 10*time.Second, "timer set")
+	)
+	flag.Parse()
+	args := flag.Args()
+
+	//問題用のファイルを読み込み
+	word := readfile(args[0])
+
 	fmt.Println("Start typing GAME!!!")
-	ch := quiz()
-	ch2 := time.After(10 * time.Second)
+
+	ch := quiz(word)
+	ch2 := time.After(*seconds)
 
 	j := 0
+
+	END:
 	for {
 		select {
 		case <-ch2:
-			s := strconv.Itoa(j)
-			fmt.Println("Correct Answer is " + s)
-			return
-		case <-ch:
-			j++
+			break END
+		case _, ok := <-ch:
+			if ok {
+				j++
+			}else{
+				break END
+			}
 		}
 	}
+	s := strconv.Itoa(j)
+	fmt.Println("Correct Answer is " + s)
+
 }
 
-func quiz() <-chan struct{}{
+func readfile(file string) []string {
+
+	var word []string
+	var fp *os.File
+	var err error
+
+	fp, err = os.Open(file)
+	if err != nil {
+		panic(err)
+	}
+	defer fp.Close()
+
+	var sc = bufio.NewScanner(fp);
+	sc.Split(bufio.ScanWords)
+	for sc.Scan(){
+		word = append(word, sc.Text())
+	}
+	return word
+}
+
+func quiz(quizes []string) <-chan struct{}{
 	ch := make(chan struct{})
 
 	go func(){
-		quizes := []string{"hoge", "moga", "fuga", "moga", "hoge", "hoge", "hoge", "hoge", "hoge", "hoge"}
 
 		for _, quiz := range quizes {
 			fmt.Print(quiz + ":")
