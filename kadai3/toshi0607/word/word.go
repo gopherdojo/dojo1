@@ -5,6 +5,8 @@ import (
 	"bufio"
 )
 
+const questionsCount = 60
+
 func GetWords() ([]string, error) {
 	path := "words.txt"
 	file, err := os.Open(path)
@@ -22,10 +24,11 @@ func GetWords() ([]string, error) {
 
 	words := make([]string, 0)
 	count := 0
+	// map's iteration returns keys and values in random order
 	for k, _ := range lines {
 		words = append(words, k)
 		count++
-		if count == 60 {
+		if count == questionsCount {
 			break
 		}
 	}

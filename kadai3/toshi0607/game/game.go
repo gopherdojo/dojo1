@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"bufio"
 	"github.com/toshi0607/dojo1/kadai3/toshi0607/word"
+	"math"
 )
 
 type Game struct {
@@ -23,29 +24,49 @@ func (g *Game) Run() int {
 	}
 	timeChan := time.NewTimer(30 * time.Second).C
 
+	correctAnswerCount := 0
+	answerCount := 0
+Outer:
 	for _, v := range words {
 		fmt.Printf("type %s\n", v)
-	Loop:
+	Inner:
 		for {
 			fmt.Print(">")
 			select {
 			case <-timeChan:
-				fmt.Println("Timer expired")
-				return 0
+				break Outer
 			case s := <-ch:
 				if s == v {
 					fmt.Println("ええで")
-					break Loop
+					correctAnswerCount++
+					answerCount++
+					break Inner
 				} else {
 					fmt.Println("あかんで")
+					answerCount++
 					fmt.Printf("type %s\n", v)
 				}
 			}
 
 		}
 	}
-	fmt.Println("おしまい")
+	fmt.Println("\n終わりやで")
+	fmt.Printf("正解数: %d words\n", correctAnswerCount)
+	correctness := float64(0)
+	if answerCount != 0 {
+		correctness = RoundPlus(float64(correctAnswerCount) / float64(answerCount) * 100, 2)
+	}
+	fmt.Printf("正確さ: %v %%\n", correctness)
 	return 0
+}
+
+func Round(f float64) float64 {
+	return math.Floor(f + .5)
+}
+
+func RoundPlus(f float64, places int) (float64) {
+	shift := math.Pow(10, float64(places))
+	return Round(f * shift) / shift;
 }
 
 func input(r io.Reader) <-chan string {
