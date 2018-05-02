@@ -18,9 +18,12 @@ func main() {
 	args := flag.Args()
 
 	//問題用のファイルを読み込み
-	word := readfile(args[0])
+	word, err := readfile(args[0])
+	if err != nil {
+		logError(err)
+	}
 
-	fmt.Println("Start typing GAME!!!")
+	fmt.Println("Typing GAME Start!!")
 
 	ch := quiz(word)
 	ch2 := time.After(*seconds)
@@ -44,8 +47,7 @@ func main() {
 	fmt.Println("Correct Answer is " + s)
 
 }
-
-func readfile(file string) []string {
+func readfile(file string) ([]string, error) {
 
 	var word []string
 	var fp *os.File
@@ -53,7 +55,7 @@ func readfile(file string) []string {
 
 	fp, err = os.Open(file)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer fp.Close()
 
@@ -62,7 +64,7 @@ func readfile(file string) []string {
 	for sc.Scan(){
 		word = append(word, sc.Text())
 	}
-	return word
+	return word, nil
 }
 
 func quiz(quizes []string) <-chan struct{}{
