@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+// a tool for generating a words file from the user dict
 func main() {
 	path := "/usr/share/dict/words"
 	file, err := os.Open(path)

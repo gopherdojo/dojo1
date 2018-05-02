@@ -31,7 +31,7 @@ func (g *Game) Run() int {
 	answerCount := 0
 Outer:
 	for _, v := range words {
-		fmt.Printf("type %s\n", v)
+		fmt.Printf("type: %s\n", v)
 	Inner:
 		for {
 			fmt.Print(">")
@@ -47,7 +47,7 @@ Outer:
 				} else {
 					fmt.Println("あかんで")
 					answerCount++
-					fmt.Printf("type %s\n", v)
+					fmt.Printf("type: %s\n", v)
 				}
 			}
 
@@ -73,8 +73,8 @@ func roundPlus(f float64, places int) (float64) {
 }
 
 func start(r io.Reader) <-chan struct{} {
-	fmt.Println("\nタイピングゲームやで")
-	fmt.Println("\n制限時間は30秒")
+	fmt.Println("■ タイピングゲームやで")
+	fmt.Println("■ 制限時間は30秒")
 	fmt.Println(">>> press any key to start <<<")
 	ch := make(chan struct{})
 	go func() {
