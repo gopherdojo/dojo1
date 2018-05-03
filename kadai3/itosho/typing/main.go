@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math/rand"
 	"os"
+	"time"
 )
 
 func input(r io.Reader) <-chan string {
@@ -23,23 +25,33 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
-
 func main() {
 	ch := input(os.Stdin)
 	for {
-		question := getWord()
+		question := getRandWord()
 		fmt.Print(">" + question)
 		answer := <-ch
 		if question == answer {
 			fmt.Print("correct!")
 		} else {
-			fmt.Print("bad!")
+			fmt.Print("wrong!")
 		}
 
 		fmt.Println(<-ch)
 	}
 }
 
-func getWord() string {
-	return "dog"
+func getRandWord() string {
+	words := [...]string{
+		"dog",
+		"cat",
+		"elephant",
+		"lion",
+		"bird",
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	i := rand.Intn(len(words))
+
+	return words[i]
 }
