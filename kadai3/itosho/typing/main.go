@@ -10,8 +10,6 @@ import (
 )
 
 func input(r io.Reader) <-chan string {
-	fmt.Println("> start typing game.")
-
 	ch := make(chan string)
 
 	go func() {
@@ -26,18 +24,27 @@ func input(r io.Reader) <-chan string {
 }
 
 func main() {
+	fmt.Println("start typing game.")
+	questionCnt := 0
+	correctCnt := 0
+	wrongCnt := 0
+
 	ch := input(os.Stdin)
 	for {
-		question := getRandWord()
-		fmt.Print(">" + question)
-		answer := <-ch
-		if question == answer {
-			fmt.Print("correct!")
-		} else {
-			fmt.Print("wrong!")
-		}
+		questionCnt++
 
-		fmt.Println(<-ch)
+		question := getRandWord()
+		fmt.Println("-")
+		fmt.Println(question)
+		answer := <-ch
+
+		if question == answer {
+			correctCnt++
+			fmt.Println(fmt.Sprintf("correct [%d/%d]", correctCnt, questionCnt))
+		} else {
+			wrongCnt++
+			fmt.Println(fmt.Sprintf("wrong [%d/%d]", wrongCnt, questionCnt))
+		}
 	}
 }
 
