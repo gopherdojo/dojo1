@@ -29,21 +29,30 @@ func main() {
 	correctCnt := 0
 	wrongCnt := 0
 
+	t := time.After(60 * time.Second)
 	ch := input(os.Stdin)
 	for {
-		questionCnt++
+		select {
+		case <-t:
+			fmt.Println("time over.")
+			fmt.Println("-")
+			fmt.Println(fmt.Sprintf("result: %d/%d", correctCnt, questionCnt))
+			return
+		default:
+			questionCnt++
 
-		question := getRandWord()
-		fmt.Println("-")
-		fmt.Println(question)
-		answer := <-ch
+			question := getRandWord()
+			fmt.Println("-")
+			fmt.Println(question)
+			answer := <-ch
 
-		if question == answer {
-			correctCnt++
-			fmt.Println(fmt.Sprintf("correct [%d/%d]", correctCnt, questionCnt))
-		} else {
-			wrongCnt++
-			fmt.Println(fmt.Sprintf("wrong [%d/%d]", wrongCnt, questionCnt))
+			if question == answer {
+				correctCnt++
+				fmt.Println(fmt.Sprintf("correct [%d/%d]", correctCnt, questionCnt))
+			} else {
+				wrongCnt++
+				fmt.Println(fmt.Sprintf("wrong [%d/%d]", wrongCnt, questionCnt))
+			}
 		}
 	}
 }
