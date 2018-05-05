@@ -1,6 +1,10 @@
 package downloader
 
-import "fmt"
+import (
+	"fmt"
+
+	"gopkg.in/cheggaaa/pb.v1"
+)
 
 // PartialContent has Range header's from and to byte position.
 type PartialContent struct {
@@ -8,6 +12,7 @@ type PartialContent struct {
 	to    int
 	index int
 	path  string
+	pb    *pb.ProgressBar
 }
 
 func (p PartialContent) filePath() string {

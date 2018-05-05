@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"golang.org/x/sync/errgroup"
+	"gopkg.in/cheggaaa/pb.v1"
 )
 
 type httpClient interface {
@@ -35,6 +36,7 @@ func Run(url string, path string, parallel int) error {
 	}
 
 	ps := make([]PartialContent, parallel)
+	pbs := make([]*pb.ProgressBar, parallel)
 	defer clear(ps)
 
 	span := int(math.Ceil(float64(length) / float64(parallel)))
@@ -44,8 +46,16 @@ func Run(url string, path string, parallel int) error {
 		if to > length {
 			to = length
 		}
-		ps[i] = PartialContent{from: from, to: to - 1, path: path, index: i}
+		pb := pb.New(to - from).Prefix(fmt.Sprintf("%s.%d", path, i))
+		ps[i] = PartialContent{from: from, to: to - 1, index: i, path: path, pb: pb}
+		pbs[i] = pb
 	}
+
+	pool, err := pb.StartPool(pbs...)
+	if err != nil {
+		return err
+	}
+	defer pool.Stop()
 
 	if err = download(url, path, ps); err != nil {
 		return err
@@ -66,6 +76,8 @@ func download(url, path string, ps []PartialContent) error {
 
 func downloadParallel(url string, p PartialContent, eg *errgroup.Group) {
 	eg.Go(func() error {
+		p.pb.Start()
+
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return err
@@ -94,9 +106,11 @@ func downloadParallel(url string, p PartialContent, eg *errgroup.Group) {
 		}
 		defer file.Close()
 
-		if _, err = io.Copy(file, body); err != nil {
+		if _, err = io.Copy(io.MultiWriter(file, p.pb), body); err != nil {
 			return err
 		}
+
+		p.pb.Finish()
 		return nil
 	})
 }
