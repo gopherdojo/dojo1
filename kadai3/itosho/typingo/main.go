@@ -24,7 +24,7 @@ func input(r io.Reader) <-chan string {
 }
 
 func main() {
-	fmt.Println("Start typing game!")
+	fmt.Println("Start typingo game!")
 	fmt.Println("Time limit is one minute.")
 	fmt.Println("Are you ready? [Y/n]")
 
