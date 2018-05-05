@@ -17,16 +17,16 @@ func getQuestions() ([]string, error) {
 
 	defer f.Close()
 
-	lines := make([]string, 0, 10)
+	questions := make([]string, 0, 10)
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		questions = append(questions, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
 
-	return lines, nil
+	return questions, nil
 }
 
 func getRandQuestion(questions []string) string {
