@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func input(r io.Reader) <-chan string {
+func answer(r io.Reader) <-chan string {
 	ch := make(chan string)
 
 	go func() {
@@ -22,18 +22,16 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
-func game(ctx context.Context) bool {
+func play(ctx context.Context) error {
 	correctCnt := 0
 	wrongCnt := 0
 
 	questions, err := getQuestions()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Get Questions Error. The following are the details.")
-		fmt.Fprintln(os.Stderr, err)
-		return false
+		return err
 	}
 
-	ch := input(os.Stdin)
+	ch := answer(os.Stdin)
 	for {
 		question := getRandQuestion(questions)
 		fmt.Println("-----")
@@ -45,7 +43,7 @@ func game(ctx context.Context) bool {
 			fmt.Println("\n-----")
 			fmt.Println("Time Over!")
 			fmt.Println(fmt.Sprintf("Score: %d/%d", correctCnt, correctCnt+wrongCnt))
-			return true
+			return nil
 		case answer := <-ch:
 			if question == answer {
 				correctCnt++
