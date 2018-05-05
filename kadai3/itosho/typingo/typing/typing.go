@@ -31,20 +31,18 @@ func Start(ctx context.Context) {
 
 	ch := input(os.Stdin)
 	for {
+		question := getRandWord()
+		fmt.Println("-")
+		fmt.Println(question)
+
 		select {
 		case <-ctx.Done():
+			fmt.Println("\n-")
 			fmt.Println("time over.")
-			fmt.Println("-")
 			fmt.Println(fmt.Sprintf("result: %d/%d", correctCnt, questionCnt))
 			return
-		default:
+		case answer := <-ch:
 			questionCnt++
-
-			question := getRandWord()
-			fmt.Println("-")
-			fmt.Println(question)
-			answer := <-ch
-
 			if question == answer {
 				correctCnt++
 				fmt.Println("correct!")
