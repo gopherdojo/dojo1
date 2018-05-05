@@ -13,7 +13,7 @@ $ cd kadai3/itosho/typingo
 $ go build -o ./typingo main.go
 ```
 
-# Usage
+## Usage
 ```
 # under built directory
 $ ./typingo [-s seconds]
