@@ -24,12 +24,30 @@ func input(r io.Reader) <-chan string {
 }
 
 func main() {
-	fmt.Println("start typing game.")
+	fmt.Println("Start typing game!")
+	fmt.Println("Time limit is one minute.")
+	fmt.Println("Are you ready? [Y/n]")
+
+	reader := bufio.NewReader(os.Stdin)
+	s, err := reader.ReadByte()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if s == []byte("Y")[0] || s == []byte("y")[0] {
+		fmt.Println("Ready Go!")
+	} else if s == []byte("N")[0] || s == []byte("n")[0] {
+		os.Exit(0)
+	} else {
+		os.Exit(1)
+	}
+
 	questionCnt := 0
 	correctCnt := 0
 	wrongCnt := 0
 
-	t := time.After(60 * time.Second)
+	t := time.After(10 * time.Second)
 	ch := input(os.Stdin)
 	for {
 		select {
@@ -48,10 +66,10 @@ func main() {
 
 			if question == answer {
 				correctCnt++
-				fmt.Println(fmt.Sprintf("correct [%d/%d]", correctCnt, questionCnt))
+				fmt.Println("correct!")
 			} else {
 				wrongCnt++
-				fmt.Println(fmt.Sprintf("wrong [%d/%d]", wrongCnt, questionCnt))
+				fmt.Println("wrong!")
 			}
 		}
 	}
