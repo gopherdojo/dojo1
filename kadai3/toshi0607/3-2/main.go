@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"io/ioutil"
 	"sync"
+	"os"
+	"io"
 )
 
 var wg sync.WaitGroup
@@ -36,7 +38,7 @@ func main() {
 		to := clen * (i + 1)
 
 		if i == procs-1 {
-			to += diff // Add the remaining bytes in the last request
+			to += diff
 		}
 
 		go func(min int, max int, i int) {
@@ -54,10 +56,25 @@ func main() {
 			defer resp.Body.Close()
 			reader, _ := ioutil.ReadAll(resp.Body)
 			body[i] = string(reader)
-			ioutil.WriteFile(strconv.Itoa(i), []byte(string(body[i])), 0x777)
+			ioutil.WriteFile(strconv.Itoa(i), []byte(string(body[i])), os.ModePerm)
 			wg.Done()
 		}(from, to, i)
 	}
 	wg.Wait()
-	//ioutil.WriteFile("gobook.pdf", []byte(body), 0x777)
+
+	file, err := os.Create("gobook.pdf")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	for i := 0; i < procs; i++ {
+		subFile, err := os.Open(fmt.Sprint(i))
+		if err != nil {
+			log.Fatal(err)
+		}
+		io.Copy(file, subFile)
+
+		subFile.Close()
+	}
 }
