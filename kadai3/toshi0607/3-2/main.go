@@ -3,13 +3,17 @@ package main
 import (
 	"net/http"
 	"fmt"
-	"github.com/prometheus/common/log"
 	"strconv"
 	"sync"
 	"os"
 	"io"
 	"path"
+	"context"
+
 	"golang.org/x/sync/errgroup"
+
+	"github.com/prometheus/common/log"
+
 )
 
 const tempDir = "dlTmp"
@@ -38,7 +42,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	eg := errgroup.Group{}
+	eg, ctx := errgroup.WithContext(context.Background())
 
 	for i := 0; i < procs; i++ {
 		i := i
@@ -51,7 +55,7 @@ func main() {
 		}
 
 		eg.Go(func() error {
-			return rangeRequest(from, to , i, URL)
+			return rangeRequest(ctx, from, to , i, URL)
 		})
 	}
 	if err := eg.Wait(); err != nil {
@@ -79,8 +83,9 @@ func main() {
 	}
 }
 
-func rangeRequest(from int, to int, i int, url string) error {
-	client := &http.Client{}
+func rangeRequest(ctx context.Context,from int, to int, i int, url string) error {
+	tr := &http.Transport{}
+	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
@@ -88,6 +93,9 @@ func rangeRequest(from int, to int, i int, url string) error {
 
 	rangeHeader := "bytes=" + strconv.Itoa(from) + "-" + strconv.Itoa(to-1)
 	req.Header.Add("Range", rangeHeader)
+	// errgroup.WithContext wraps context by calling context.WithCancel
+	// cf. https://github.com/golang/sync/blob/master/errgroup/errgroup.go#L34
+	req = req.WithContext(ctx)
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
