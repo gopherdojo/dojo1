@@ -9,6 +9,7 @@ import (
 	"os"
 	"io"
 	"path"
+	"golang.org/x/sync/errgroup"
 )
 
 const tempDir = "dlTmp"
@@ -37,8 +38,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	eg := errgroup.Group{}
+
 	for i := 0; i < procs; i++ {
-		wg.Add(1)
+		i := i
 
 		from := subFileLen * i
 		to := subFileLen * (i + 1)
@@ -47,34 +50,13 @@ func main() {
 			to += remain
 		}
 
-		go func(from int, to int, i int) {
-			client := &http.Client{}
-			req, err := http.NewRequest("GET", URL, nil)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			rangeHeader := "bytes=" + strconv.Itoa(from) + "-" + strconv.Itoa(to-1)
-			req.Header.Add("Range", rangeHeader)
-			resp, err := client.Do(req)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf("Range: %v, %v bytes\n", rangeHeader, resp.ContentLength)
-			defer resp.Body.Close()
-
-			file, err := os.OpenFile(path.Join(tempDir, fmt.Sprint(i)), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer file.Close()
-
-			io.Copy(file, resp.Body)
-
-			wg.Done()
-		}(from, to, i)
+		eg.Go(func() error {
+			return rangeRequest(from, to , i, URL)
+		})
 	}
-	wg.Wait()
+	if err := eg.Wait(); err != nil {
+		log.Fatal(err)
+	}
 
 	file, err := os.Create("gobook.pdf")
 	if err != nil {
@@ -95,4 +77,31 @@ func main() {
 	if err := os.RemoveAll(tempDir); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func rangeRequest(from int, to int, i int, url string) error {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+
+	rangeHeader := "bytes=" + strconv.Itoa(from) + "-" + strconv.Itoa(to-1)
+	req.Header.Add("Range", rangeHeader)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Range: %v, %v bytes\n", rangeHeader, resp.ContentLength)
+	defer resp.Body.Close()
+
+	file, err := os.OpenFile(path.Join(tempDir, fmt.Sprint(i)), os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	io.Copy(file, resp.Body)
+
+	return nil
 }
