@@ -23,12 +23,12 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
-func Start() {
+func Start(seconds time.Duration) {
 	questionCnt := 0
 	correctCnt := 0
 	wrongCnt := 0
 
-	t := time.After(10 * time.Second)
+	t := time.After(seconds * time.Second)
 	ch := input(os.Stdin)
 	for {
 		select {

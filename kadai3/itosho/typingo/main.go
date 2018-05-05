@@ -4,13 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	"./typing"
 )
 
 func main() {
+	var seconds time.Duration
+	seconds = 10
 	fmt.Println("Start typingo game!")
-	fmt.Println("Time limit is one minute.")
+	fmt.Println(fmt.Sprintf("Time limit is %d seconds", seconds))
 	fmt.Println("Are you ready? [Y/n]")
 
 	reader := bufio.NewReader(os.Stdin)
@@ -28,5 +31,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	typing.Start()
+	typing.Start(seconds)
 }
