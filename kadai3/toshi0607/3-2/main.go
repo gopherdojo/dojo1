@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"github.com/prometheus/common/log"
 	"strconv"
-	"io/ioutil"
 	"sync"
 	"os"
 	"io"
+	"path"
 )
+
+const tempDir = "dlTmp"
 
 var wg sync.WaitGroup
 
@@ -30,6 +32,11 @@ func main() {
 	}
 	subFileLen := len / procs
 	remain := len % procs
+
+	if err := os.MkdirAll(tempDir, os.ModePerm); err != nil {
+		log.Fatal(err)
+	}
+
 	for i := 0; i < procs; i++ {
 		wg.Add(1)
 
@@ -56,15 +63,13 @@ func main() {
 			fmt.Printf("Range: %v, %v bytes\n", rangeHeader, resp.ContentLength)
 			defer resp.Body.Close()
 
-			bytes, err := ioutil.ReadAll(resp.Body)
+			file, err := os.OpenFile(path.Join(tempDir, fmt.Sprint(i)), os.O_WRONLY|os.O_CREATE, os.ModePerm)
 			if err != nil {
 				log.Fatal(err)
 			}
+			defer file.Close()
 
-			err = ioutil.WriteFile(strconv.Itoa(i), bytes, os.ModePerm)
-			if err != nil {
-				log.Fatal(err)
-			}
+			io.Copy(file, resp.Body)
 
 			wg.Done()
 		}(from, to, i)
@@ -78,12 +83,16 @@ func main() {
 	defer file.Close()
 
 	for i := 0; i < procs; i++ {
-		subFile, err := os.Open(fmt.Sprint(i))
+		subFile, err := os.Open(path.Join(tempDir, fmt.Sprint(i)))
 		if err != nil {
 			log.Fatal(err)
 		}
 		io.Copy(file, subFile)
 
 		subFile.Close()
+	}
+
+	if err := os.RemoveAll(tempDir); err != nil {
+		log.Fatal(err)
 	}
 }
