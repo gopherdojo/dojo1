@@ -2,6 +2,7 @@ package typing
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"math/rand"
@@ -23,16 +24,15 @@ func input(r io.Reader) <-chan string {
 	return ch
 }
 
-func Start(seconds time.Duration) {
+func Start(ctx context.Context) {
 	questionCnt := 0
 	correctCnt := 0
 	wrongCnt := 0
 
-	t := time.After(seconds * time.Second)
 	ch := input(os.Stdin)
 	for {
 		select {
-		case <-t:
+		case <-ctx.Done():
 			fmt.Println("time over.")
 			fmt.Println("-")
 			fmt.Println(fmt.Sprintf("result: %d/%d", correctCnt, questionCnt))

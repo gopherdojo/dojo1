@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -31,5 +32,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	typing.Start(seconds)
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, seconds*time.Second)
+	defer cancel()
+
+	typing.Start(ctx)
 }
