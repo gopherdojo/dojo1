@@ -12,8 +12,8 @@ import (
 
 func main() {
 	var seconds time.Duration
-	seconds = 10
-	fmt.Println("Start typingo game!")
+	seconds = 30
+	fmt.Println("Start typing game!")
 	fmt.Println(fmt.Sprintf("Time limit is %d seconds", seconds))
 	fmt.Println("Are you ready? [Y/n]")
 

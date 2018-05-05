@@ -5,9 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"math/rand"
 	"os"
-	"time"
 )
 
 func input(r io.Reader) <-chan string {
@@ -25,13 +23,20 @@ func input(r io.Reader) <-chan string {
 }
 
 func Start(ctx context.Context) {
+	questions, err := getQuestions()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Get Questions Error. The following are the details.")
+		fmt.Fprintln(os.Stderr, err)
+		return
+	}
+
 	questionCnt := 0
 	correctCnt := 0
 	wrongCnt := 0
 
 	ch := input(os.Stdin)
 	for {
-		question := getRandWord()
+		question := getRandQuestion(questions)
 		fmt.Println("-")
 		fmt.Println(question)
 
@@ -52,19 +57,4 @@ func Start(ctx context.Context) {
 			}
 		}
 	}
-}
-
-func getRandWord() string {
-	words := [...]string{
-		"dog",
-		"cat",
-		"elephant",
-		"lion",
-		"bird",
-	}
-
-	rand.Seed(time.Now().UnixNano())
-	i := rand.Intn(len(words))
-
-	return words[i]
 }
