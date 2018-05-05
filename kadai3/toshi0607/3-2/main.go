@@ -14,49 +14,58 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-	res, err := http.Head("http://www.golang-book.com/public/pdf/gobook.pdf")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(res.Header.Get("Accept-Ranges"))
-	if res.Header.Get("Accept-Ranges") != "bytes" {
-		fmt.Println("this site doesn't support a range request")
-	}
-	l, err := strconv.Atoi(res.Header.Get("Content-Length"))
-	fmt.Printf("total length: %d bytes\n", l)
-	if err != nil {
-		log.Fatal(err)
-	}
+	URL := "http://www.golang-book.com/public/pdf/gobook.pdf"
 	procs := 5
-	clen := l / procs
-	diff := l % procs
-	body := make([]string, l+1)
+	res, err := http.Head(URL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if res.Header.Get("Accept-Ranges") != "bytes" {
+		log.Fatal("this site doesn't support a range request")
+	}
+	len, err := strconv.Atoi(res.Header.Get("Content-Length"))
+	fmt.Printf("total length: %d bytes\n", len)
+	if err != nil {
+		log.Fatal(err)
+	}
+	subFileLen := len / procs
+	remain := len % procs
 	for i := 0; i < procs; i++ {
 		wg.Add(1)
 
-		from := clen * i
-		to := clen * (i + 1)
+		from := subFileLen * i
+		to := subFileLen * (i + 1)
 
 		if i == procs-1 {
-			to += diff
+			to += remain
 		}
 
-		go func(min int, max int, i int) {
+		go func(from int, to int, i int) {
 			client := &http.Client{}
-			req, _ := http.NewRequest("GET", "http://www.golang-book.com/public/pdf/gobook.pdf", nil)
-			rangeHeader := ""
-			if i != procs-1 {
-				rangeHeader = "bytes=" + strconv.Itoa(min) + "-" + strconv.Itoa(max-1)
-			} else {
-				rangeHeader = "bytes=" + strconv.Itoa(min) + "-" + strconv.Itoa(max)
+			req, err := http.NewRequest("GET", URL, nil)
+			if err != nil {
+				log.Fatal(err)
 			}
+
+			rangeHeader := "bytes=" + strconv.Itoa(from) + "-" + strconv.Itoa(to-1)
 			req.Header.Add("Range", rangeHeader)
-			resp, _ := client.Do(req)
-			fmt.Println(resp.ContentLength)
+			resp, err := client.Do(req)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("Range: %v, %v bytes\n", rangeHeader, resp.ContentLength)
 			defer resp.Body.Close()
-			reader, _ := ioutil.ReadAll(resp.Body)
-			body[i] = string(reader)
-			ioutil.WriteFile(strconv.Itoa(i), []byte(string(body[i])), os.ModePerm)
+
+			bytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			err = ioutil.WriteFile(strconv.Itoa(i), bytes, os.ModePerm)
+			if err != nil {
+				log.Fatal(err)
+			}
+
 			wg.Done()
 		}(from, to, i)
 	}
