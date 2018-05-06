@@ -13,42 +13,65 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/pkg/errors"
+	"github.com/jessevdk/go-flags"
+	"strings"
 )
 
 const tempDir = "dlTmp"
 
 var wg sync.WaitGroup
 
-func Run() int {
-	URL := "http://www.golang-book.com/public/pdf/gobook.pdf"
-	procs := 5
+type Downloader struct {
+	Argv  []string
+	procs int
+	url   string
+	name  string
+}
 
+type cliOptions struct {
+	Name  string `short:"n" long:"name" description:"output file name with extension. if not provided, rangedownloader will guess a file name based on URL"`
+	Procs int    `short:"p" long:"procs" description:"number of parallel" default:"0"`
+	Args struct {
+		URL string
+	} `positional-args:"yes"`
+}
+
+func New() *Downloader {
+	return &Downloader{Argv: os.Args[1:]}
+}
+
+func (d *Downloader) Run() int {
 	if err := os.MkdirAll(tempDir, os.ModePerm); err != nil {
 		fmt.Println(err)
 		return 1
 	}
 
-	len, err := getContentLength(URL)
+	if err := d.parseCommandLine(); err != nil {
+		fmt.Println(err)
+		return 1
+	}
+
+	len, err := d.getContentLength()
 	if err != nil {
 		fmt.Println(err)
 		return 1
 	}
-	subFileLen := len / procs
-	remain := len % procs
+	subFileLen := len / d.procs
+	remain := len % d.procs
 
 	eg, ctx := errgroup.WithContext(context.Background())
-	for i := 0; i < procs; i++ {
+	for i := 0; i < d.procs; i++ {
 		i := i
 
 		from := subFileLen * i
 		to := subFileLen * (i + 1)
 
-		if i == procs-1 {
+		if i == d.procs-1 {
 			to += remain
 		}
 
 		eg.Go(func() error {
-			return rangeRequest(ctx, from, to , i, URL)
+			return d.rangeRequest(ctx, from, to, i)
 		})
 	}
 	if err := eg.Wait(); err != nil {
@@ -56,7 +79,7 @@ func Run() int {
 		return 1
 	}
 
-	if err := createFile(procs); err != nil {
+	if err := d.createFile(); err != nil {
 		fmt.Println(err)
 		return 1
 	}
@@ -68,8 +91,35 @@ func Run() int {
 	return 0
 }
 
-func getContentLength(URL string) (int, error) {
-	res, err := http.Head(URL)
+func (d *Downloader) parseCommandLine() error {
+	opts := &cliOptions{}
+	p := flags.NewParser(opts, flags.HelpFlag)
+	_, err := p.ParseArgs(d.Argv)
+	if err != nil {
+		return err
+	}
+
+	d.url = opts.Args.URL
+	if opts.Name == "" {
+		if name := d.guessFileName(); name == "" {
+			return errors.Wrap(err, "please provide output file name")
+		} else {
+			d.name = name
+		}
+	} else {
+		d.name = opts.Name
+	}
+	d.procs = opts.Procs
+	return nil
+}
+
+func (d *Downloader) guessFileName() string {
+	s := strings.Split(d.url, "/")
+	return s[len(s)-1]
+}
+
+func (d *Downloader) getContentLength() (int, error) {
+	res, err := http.Head(d.url)
 	if err != nil {
 		return 0, err
 	}
@@ -84,9 +134,9 @@ func getContentLength(URL string) (int, error) {
 	return len, nil
 }
 
-func rangeRequest(ctx context.Context,from int, to int, i int, url string) error {
+func (d *Downloader) rangeRequest(ctx context.Context, from int, to int, i int) error {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", d.url, nil)
 	if err != nil {
 		return err
 	}
@@ -114,14 +164,14 @@ func rangeRequest(ctx context.Context,from int, to int, i int, url string) error
 	return nil
 }
 
-func createFile(procs int) error {
-	file, err := os.Create("gobook.pdf")
+func (d *Downloader) createFile() error {
+	file, err := os.Create(d.name)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	for i := 0; i < procs; i++ {
+	for i := 0; i < d.procs; i++ {
 		subFile, err := os.Open(path.Join(tempDir, fmt.Sprint(i)))
 		if err != nil {
 			return err

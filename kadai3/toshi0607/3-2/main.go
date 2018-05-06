@@ -13,5 +13,6 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-	os.Exit(rangedownloader.Run())
+	cli := rangedownloader.New()
+	os.Exit(cli.Run())
 }
