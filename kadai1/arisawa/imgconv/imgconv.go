@@ -48,26 +48,26 @@ func SupportedFormats() string {
 func NewImgconv(in, out, from, to string, verbose bool) (*Imgconv, error) {
 	stat, err := os.Stat(in)
 	if err != nil {
-		return &Imgconv{}, err
+		return nil, err
 	}
 	if !stat.IsDir() {
-		return &Imgconv{}, fmt.Errorf("in:%s is not directory", in)
+		return nil, fmt.Errorf("in:%s is not directory", in)
 	}
 	stat, err = os.Stat(out)
 	if err != nil {
-		return &Imgconv{}, err
+		return nil, err
 	}
 	if !stat.IsDir() {
-		return &Imgconv{}, fmt.Errorf("out:%s is not directory", out)
+		return nil, fmt.Errorf("out:%s is not directory", out)
 	}
 	if _, ok := supportedFormats[from]; !ok {
-		return &Imgconv{}, fmt.Errorf("from:%s is not supported", from)
+		return nil, fmt.Errorf("from:%s is not supported", from)
 	}
 	if _, ok := supportedFormats[to]; !ok {
-		return &Imgconv{}, fmt.Errorf("to:%s is not supported", to)
+		return nil, fmt.Errorf("to:%s is not supported", to)
 	}
 	if from == to {
-		return &Imgconv{}, fmt.Errorf("same formats are specified")
+		return nil, fmt.Errorf("same formats are specified")
 	}
 	return &Imgconv{in, out, from, to, verbose}, nil
 }
