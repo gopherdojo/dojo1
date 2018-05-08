@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
-	"github.com/arisawa/go-imgconv/imgconv"
+	"github.com/gopherdojo/dojo1/kadai1/arisawa/imgconv"
 )
 
 var (
@@ -17,7 +18,12 @@ var (
 	verbose = flag.Bool("verbose", false, "Verbose output")
 )
 
-func main() {
+func init() {
+	formats := make([]string, 0, len(imgconv.SupportedFormats))
+	for k, _ := range imgconv.SupportedFormats {
+		formats = append(formats, k)
+	}
+
 	flag.Usage = func() {
 		fmt.Printf(`Usage:
   %s -in INPUT_DIR -out OUTPUT_DIR -from FROM_FORMAT -to TO_FORMAT
@@ -25,9 +31,12 @@ func main() {
   Convert image files under speicfied directory recursively.
   Supported formats: %s
 
-`, os.Args[0], imgconv.SupportedFormats())
+`, os.Args[0], strings.Join(formats, ", "))
 		flag.PrintDefaults()
 	}
+}
+
+func main() {
 	flag.Parse()
 
 	if *in == "" || *out == "" || *from == "" || *to == "" {
@@ -38,7 +47,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = c.Do();
+	err = c.Do()
 	if err != nil {
 		log.Fatal(err)
 	}
