@@ -29,19 +29,11 @@ type Imgconv struct {
 	verbose bool
 }
 
-var supportedFormats = map[string]int{
-	"png": 1,
-	"jpg": 1,
-	"gif": 1,
-}
-
-// SupportedFormats returns comma separated string of supported image formats.
-func SupportedFormats() string {
-	var formats []string
-	for k, _ := range supportedFormats {
-		formats = append(formats, k)
-	}
-	return strings.Join(formats, ", ")
+// SupportedFormats are supported image formats.
+var SupportedFormats = map[string]struct{}{
+	"png": {},
+	"jpg": {},
+	"gif": {},
 }
 
 // NewImgconv allocates a new Imgconv struct and detect error.
@@ -60,10 +52,10 @@ func NewImgconv(in, out, from, to string, verbose bool) (*Imgconv, error) {
 	if !stat.IsDir() {
 		return nil, fmt.Errorf("out:%s is not directory", out)
 	}
-	if _, ok := supportedFormats[from]; !ok {
+	if _, ok := SupportedFormats[from]; !ok {
 		return nil, fmt.Errorf("from:%s is not supported", from)
 	}
-	if _, ok := supportedFormats[to]; !ok {
+	if _, ok := SupportedFormats[to]; !ok {
 		return nil, fmt.Errorf("to:%s is not supported", to)
 	}
 	if from == to {
