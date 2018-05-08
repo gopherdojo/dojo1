@@ -111,7 +111,10 @@ func (c *Imgconv) convert(src string) error {
 
 	destDir := filepath.Dir(dest)
 	if _, err := os.Stat(destDir); err != nil {
-		os.MkdirAll(destDir, os.ModePerm)
+		err = os.MkdirAll(destDir, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 
 	file, err := os.Open(src)
