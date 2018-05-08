@@ -1,0 +1,301 @@
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = ;
+	document.CALLGRAPH = ;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "./converter"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+			
+				
+				<dd><a href="#Converter">type Converter</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewConverter">func NewConverter(from, to string) (*Converter, error)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Converter.BuildNewFilePath">func (c *Converter) BuildNewFilePath(path string) string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Converter.Convert">func (c *Converter) Convert(path string) error</a></dd>
+				
+			
+				
+				<dd><a href="#Decoder">type Decoder</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewDecoder">func NewDecoder(format string) (Decoder, error)</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Encoder">type Encoder</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewEncoder">func NewEncoder(format string) (Encoder, error)</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/target/convert.go">convert.go</a>
+			
+				<a href="/src/target/converter.go">converter.go</a>
+			
+				<a href="/src/target/decoder.go">decoder.go</a>
+			
+				<a href="/src/target/encoder.go">encoder.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+		
+		
+			
+			
+			<h2 id="Converter">type <a href="/src/target/converter.go?s=148:204#L1">Converter</a>
+				<a class="permalink" href="#Converter">&#xb6;</a>
+			</h2>
+			<p>
+Converter has image encode/decode function, and conversion destination format.
+</p>
+
+			<pre>type Converter struct {
+    <a href="#Decoder">Decoder</a>
+    <a href="#Encoder">Encoder</a>
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewConverter">func <a href="/src/target/converter.go?s=569:623#L18">NewConverter</a>
+					<a class="permalink" href="#NewConverter">&#xb6;</a>
+				</h3>
+				<pre>func NewConverter(from, to <a href="/pkg/builtin/#string">string</a>) (*<a href="#Converter">Converter</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+NewConverter creates Converter.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Converter.BuildNewFilePath">func (*Converter) <a href="/src/target/converter.go?s=268:324#L8">BuildNewFilePath</a>
+					<a class="permalink" href="#Converter.BuildNewFilePath">&#xb6;</a>
+				</h3>
+				<pre>func (c *<a href="#Converter">Converter</a>) BuildNewFilePath(path <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+BuildNewFilePath creates conversion destination file path.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Converter.Convert">func (*Converter) <a href="/src/target/converter.go?s=457:503#L13">Convert</a>
+					<a class="permalink" href="#Converter.Convert">&#xb6;</a>
+				</h3>
+				<pre>func (c *<a href="#Converter">Converter</a>) Convert(path <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+Convert converts image files under the path recursively.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="Decoder">type <a href="/src/target/decoder.go?s=142:224#L4">Decoder</a>
+				<a class="permalink" href="#Decoder">&#xb6;</a>
+			</h2>
+			<p>
+Decoder has image decode function.
+</p>
+
+			<pre>type Decoder interface {
+    Decode(r <a href="/pkg/io/">io</a>.<a href="/pkg/io/#Reader">Reader</a>) (<a href="/pkg/image/">image</a>.<a href="/pkg/image/#Image">Image</a>, <a href="/pkg/builtin/#error">error</a>)
+    <span class="comment">// contains filtered or unexported methods</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewDecoder">func <a href="/src/target/decoder.go?s=257:304#L10">NewDecoder</a>
+					<a class="permalink" href="#NewDecoder">&#xb6;</a>
+				</h3>
+				<pre>func NewDecoder(format <a href="/pkg/builtin/#string">string</a>) (<a href="#Decoder">Decoder</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+NewDecoder creates Decoder.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="Encoder">type <a href="/src/target/encoder.go?s=142:224#L4">Encoder</a>
+				<a class="permalink" href="#Encoder">&#xb6;</a>
+			</h2>
+			<p>
+Encoder has image encode function.
+</p>
+
+			<pre>type Encoder interface {
+    Encode(w <a href="/pkg/io/">io</a>.<a href="/pkg/io/#Writer">Writer</a>, i <a href="/pkg/image/">image</a>.<a href="/pkg/image/#Image">Image</a>) <a href="/pkg/builtin/#error">error</a>
+    <span class="comment">// contains filtered or unexported methods</span>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewEncoder">func <a href="/src/target/encoder.go?s=257:304#L10">NewEncoder</a>
+					<a class="permalink" href="#NewEncoder">&#xb6;</a>
+				</h3>
+				<pre>func NewEncoder(format <a href="/pkg/builtin/#string">string</a>) (<a href="#Encoder">Encoder</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+NewEncoder creates Encoder.
+</p>
+
+				
+				
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
