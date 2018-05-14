@@ -10,9 +10,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"context"
 	"time"
+	"flag"
 )
-
-const LIMIT=10
 
 type Range struct {
 	low    int
@@ -20,22 +19,42 @@ type Range struct {
 	worker int
 }
 
+type Downloader struct {
+	procs int
+	filename string
+	url string
+}
+
 func main() {
 
-	err := download()
+	var (
+		procs = flag.Int("p", 10, "split ratio to download file")
+		output = flag.String("o", "", "output filename")
+	)
+
+	flag.Parse()
+	args := flag.Args()
+
+	downloder := Downloader{}
+	downloder.procs = *procs
+	downloder.filename = *output
+	downloder.url = args[0]
+
+
+	err := downloder.download()
 	if err != nil {
 		logError(err)
 	}
 
 	//分割ダウンロードしたファイルを結合する
-	fh, err := os.Create("hoge.png")
+	fh, err := os.Create(downloder.filename)
 	if err != nil {
 		logError(err)
 	}
 	defer fh.Close()
 
-	for j:=0; j < LIMIT; j++ {
-		f := fmt.Sprintf("%s.%d", "hoge.png", j)
+	for j:=0; j < downloder.procs; j++ {
+		f := fmt.Sprintf("%s.%d", downloder.filename, j)
 		subfp, err := os.Open(f)
 		if err != nil{
 			logError(err)
@@ -49,28 +68,27 @@ func main() {
 		}
 	}
 }
-func download() error{
-	url := os.Args[1]
+func (d *Downloader)download() error{
 
 	// contents Headerを取得する
-	res, err := http.Head(url)
+	res, err := http.Head(d.url)
 	if err != nil {
-		logError(err)
+		return err
 	}
 
 	maps := res.Header
 	length, err := strconv.Atoi(maps["Content-Length"][0])
 
-	len_sub := length/LIMIT
-	diff := length%LIMIT
+	len_sub := length/d.procs
+	diff := length%d.procs
 
 	// errorGroup
 	grp, ctx := errgroup.WithContext(context.Background())
-	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 
-	for i:=0; i < LIMIT; i++ {
+	for i:=0; i < d.procs; i++ {
 
 		min := len_sub * i
 		max := len_sub * (i + 1)
@@ -80,15 +98,13 @@ func download() error{
 		r.high = max
 		r.worker = i
 
-		if(i == (LIMIT - 1)){
+		if(i == (d.procs - 1)){
 			max += diff
 		}
 		// execute get request
 		grp.Go(func() error {
-			return requests(ctx, url, r)
+			return d.requests(ctx, r)
 		})
-
-		fmt.Println(i)
 	}
 	if err := grp.Wait(); err != nil {
 		return err
@@ -96,27 +112,43 @@ func download() error{
 	return nil
 }
 
-func requests(ctx context.Context, url string, r Range) error {
-	body := make([]string, 11)
+func (d *Downloader)requests(ctx context.Context, r Range) error {
+	body := make([]string, 99)
 	client := &http.Client{}
-	req , err := http.NewRequest("GET", url, nil)
+	req , err := http.NewRequest("GET", d.url, nil)
 	if err != nil {
 		return err
 	}
-	req = req.WithContext(ctx)
 
 	range_header := "bytes=" + strconv.Itoa(r.low) + "-" + strconv.Itoa(r.high-1)
 	req.Header.Add("Range", range_header)
-	resp,err := client.Do(req)
-	if err != nil {
-		return err
+
+	errCh := make(chan error, 1)
+	tmpfile := d.filename + "." + strconv.Itoa(r.worker)
+
+	go func() {
+		resp, err := client.Do(req)
+		defer resp.Body.Close()
+
+		reader, err := ioutil.ReadAll(resp.Body)
+		body[r.worker] = string(reader)
+
+		err = ioutil.WriteFile(tmpfile, []byte(string(body[r.worker])), 0x777)
+		errCh <- err
+	}()
+
+	select {
+	case err := <-errCh:
+		fmt.Printf("requests: %s\n", err)
+		if err != nil {
+			return err
+		}
+	case <-ctx.Done():
+		fmt.Printf("requests: %s\n", ctx.Err())
+		os.Remove(tmpfile)
+		<-errCh
+		return ctx.Err()
+
 	}
-	defer resp.Body.Close()
-
-	reader, err := ioutil.ReadAll(resp.Body)
-	body[r.worker] = string(reader)
-	fmt.Println(r.worker)
-	ioutil.WriteFile("hoge.png." + strconv.Itoa(r.worker), []byte(string(body[r.worker])), 0x777)
-
 	return nil
 }
