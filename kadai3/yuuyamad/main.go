@@ -1,16 +1,16 @@
 package main
 
 import (
-	"os"
-	"net/http"
-	"strconv"
-	"io/ioutil"
-	"fmt"
-	"io"
-	"golang.org/x/sync/errgroup"
 	"context"
-	"time"
 	"flag"
+	"fmt"
+	"golang.org/x/sync/errgroup"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
 )
 
 type Range struct {
@@ -20,15 +20,15 @@ type Range struct {
 }
 
 type Downloader struct {
-	procs int
+	procs    int
 	filename string
-	url string
+	url      string
 }
 
 func main() {
 
 	var (
-		procs = flag.Int("p", 10, "split ratio to download file")
+		procs  = flag.Int("p", 10, "split ratio to download file")
 		output = flag.String("o", "", "output filename")
 	)
 
@@ -39,7 +39,6 @@ func main() {
 	downloder.procs = *procs
 	downloder.filename = *output
 	downloder.url = args[0]
-
 
 	err := downloder.download()
 	if err != nil {
@@ -53,10 +52,10 @@ func main() {
 	}
 	defer fh.Close()
 
-	for j:=0; j < downloder.procs; j++ {
+	for j := 0; j < downloder.procs; j++ {
 		f := fmt.Sprintf("%s.%d", downloder.filename, j)
 		subfp, err := os.Open(f)
-		if err != nil{
+		if err != nil {
 			logError(err)
 		}
 
@@ -68,7 +67,7 @@ func main() {
 		}
 	}
 }
-func (d *Downloader)download() error{
+func (d *Downloader) download() error {
 
 	// contents Headerを取得する
 	res, err := http.Head(d.url)
@@ -79,16 +78,15 @@ func (d *Downloader)download() error{
 	maps := res.Header
 	length, err := strconv.Atoi(maps["Content-Length"][0])
 
-	len_sub := length/d.procs
-	diff := length%d.procs
+	len_sub := length / d.procs
+	diff := length % d.procs
 
 	// errorGroup
 	grp, ctx := errgroup.WithContext(context.Background())
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-
-	for i:=0; i < d.procs; i++ {
+	for i := 0; i < d.procs; i++ {
 
 		min := len_sub * i
 		max := len_sub * (i + 1)
@@ -98,7 +96,7 @@ func (d *Downloader)download() error{
 		r.high = max
 		r.worker = i
 
-		if(i == (d.procs - 1)){
+		if i == (d.procs - 1) {
 			max += diff
 		}
 		// execute get request
@@ -112,10 +110,10 @@ func (d *Downloader)download() error{
 	return nil
 }
 
-func (d *Downloader)requests(ctx context.Context, r Range) error {
+func (d *Downloader) requests(ctx context.Context, r Range) error {
 	body := make([]string, 99)
 	client := &http.Client{}
-	req , err := http.NewRequest("GET", d.url, nil)
+	req, err := http.NewRequest("GET", d.url, nil)
 	if err != nil {
 		return err
 	}
@@ -139,7 +137,6 @@ func (d *Downloader)requests(ctx context.Context, r Range) error {
 
 	select {
 	case err := <-errCh:
-		fmt.Printf("requests: %s\n", err)
 		if err != nil {
 			return err
 		}
