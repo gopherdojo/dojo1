@@ -47,7 +47,7 @@ func loadWordBankFromFile(filepath string) (wordbank.WordProvider, error) {
 	defer f.Close()
 
 	s := bufio.NewScanner(f)
-	words := make([]string, 0)
+	var words []string
 
 	for s.Scan() {
 		w := s.Text()
