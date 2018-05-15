@@ -2,11 +2,11 @@
 
 ## Command Line Options
 
-### -p <num>
+### -p num
 split ratio to download file
 
-### -o <filename>
-output file to <filename>
+### -o filename
+output file to filename
 
 ## example
 ./yuuyamad -p 20 -o hoge.tar.xz "https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.6.3.tar.xz"
