@@ -11,7 +11,7 @@ import (
 
 const LimitTimeSec time.Duration = 10
 
-var words [8000]string
+var words = make([]string, 0, 1000)
 
 func init() {
 	f, err := os.Open("./words.txt")
@@ -20,15 +20,14 @@ func init() {
 	}
 
 	s := bufio.NewScanner(f)
-	for i := 0; s.Scan(); i++ {
-		words[i] = s.Text()
-		i++
+	for s.Scan() {
+		words = append(words, s.Text())
 	}
 }
 
 func genWord() string {
 	rand.Seed(time.Now().UnixNano())
-	return words[rand.Intn(7000)]
+	return words[rand.Intn(len(words))]
 }
 
 func main() {
