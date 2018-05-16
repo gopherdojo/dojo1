@@ -55,9 +55,9 @@ func main() {
 
 			if question == input {
 				successed++
-				fmt.Println("OK!")
+				fmt.Print("OK! ")
 			} else {
-				fmt.Println("MISS!")
+				fmt.Print("MISS! ")
 			}
 
 			fmt.Println("Point: ", successed)
