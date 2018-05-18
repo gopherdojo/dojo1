@@ -8,6 +8,8 @@ import (
 	"log"
 )
 
+var now = time.Now
+
 func init() {
 	t := time.Now().UnixNano()
 	rand.Seed(t)
@@ -26,7 +28,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	var result string
-	now := time.Now()
+	now := now()
 	if now.Month() == 1 && ( 1 <= now.Day() && now.Day() <= 3) {
 		result = "大吉"
 	} else {
