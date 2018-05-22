@@ -8,32 +8,58 @@ import (
 	"log"
 )
 
-var now = time.Now
-
-func init() {
-	t := now().UnixNano()
-	rand.Seed(t)
-}
-
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	server := Server{config: DefaultConfig()}
+	rand.Seed(server.config.Now().UnixNano())
+	server.Run()
 }
 
-type omikuji struct {
-	Result string `json:"result"`
+type Server struct {
+	config *Config
 }
 
-func handler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	result := drawOmikuji()
-	if err := json.NewEncoder(w).Encode(result); err != nil {
-		log.Println("Error: ", err)
+type Config struct {
+	Port string
+	Now  timerFunc
+}
+
+func DefaultConfig() *Config {
+	return &Config{
+		Now:  time.Now,
+		Port: "8080",
 	}
 }
 
-func drawOmikuji() omikuji {
-	if isShogatsu() {
+type timerFunc func() time.Time
+
+func (s *Server) Handler() http.Handler {
+	f := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		result := drawOmikuji(s.config.Now)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			log.Println("Error: ", err)
+		}
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", f)
+
+	return mux
+}
+
+func (s *Server) Run() {
+	httpServer := &http.Server{
+		Addr:    ":" + s.config.Port,
+		Handler: s.Handler(),
+	}
+
+	httpServer.ListenAndServe()
+}
+
+type omikuji struct {Result string `json:"result"`}
+
+func drawOmikuji(t timerFunc) omikuji {
+	if isShogatsu(t) {
 		return omikuji{Result: "大吉"}
 	}
 
@@ -51,7 +77,7 @@ func drawOmikuji() omikuji {
 	return omikuji{Result: result}
 }
 
-func isShogatsu() bool {
-	now := now()
+func isShogatsu(t timerFunc) bool {
+	now := t()
 	return now.Month() == 1 && now.Day() <= 3
 }
