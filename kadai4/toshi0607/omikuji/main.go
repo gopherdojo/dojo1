@@ -11,7 +11,7 @@ import (
 var now = time.Now
 
 func init() {
-	t := time.Now().UnixNano()
+	t := now().UnixNano()
 	rand.Seed(t)
 }
 
@@ -26,28 +26,32 @@ type omikuji struct {
 
 func handler(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	var result string
-	now := now()
-	if now.Month() == 1 && ( 1 <= now.Day() && now.Day() <= 3) {
-		result = "大吉"
-	} else {
-		s := rand.Intn(7)
-
-		switch s {
-		case 6:
-			result = "大吉"
-		case 5, 4:
-			result = "吉"
-		case 3, 2, 1:
-			result = "中吉"
-		case 0:
-			result = "凶"
-		}
-	}
-
-	r := omikuji{Result: result}
-	if err := json.NewEncoder(w).Encode(r); err != nil {
+	result := drawOmikuji()
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		log.Println("Error: ", err)
 	}
+}
+
+func drawOmikuji() omikuji {
+	if isShogatsu() {
+		return omikuji{Result: "大吉"}
+	}
+
+	var result string
+	switch rand.Intn(7) {
+	case 6:
+		result = "大吉"
+	case 5, 4:
+		result = "吉"
+	case 3, 2, 1:
+		result = "中吉"
+	case 0:
+		result = "凶"
+	}
+	return omikuji{Result: result}
+}
+
+func isShogatsu() bool {
+	now := now()
+	return now.Month() == 1 && now.Day() <= 3
 }
