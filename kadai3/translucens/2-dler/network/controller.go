@@ -2,13 +2,16 @@ package network
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"regexp"
 	"strconv"
 	"time"
@@ -84,7 +87,18 @@ func Download(rawurl string, fragments int, savepath string) error {
 		fragmentPaths[i] = fmt.Sprintf("%s/%s.%d.tmp", tempDir, filename, i)
 	}
 
-	errg := errgroup.Group{}
+	ctx, cancel := context.WithCancel(context.Background())
+	errg, ctx := errgroup.WithContext(ctx)
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, os.Interrupt)
+	go func() {
+		if sig, ok := <-signalCh; ok {
+			log.Println("recieved signal: " + sig.String())
+			cancel()
+		}
+		return
+	}()
 
 	for i := range fragmentPaths {
 		from := fragmentIndices[i]
@@ -93,12 +107,22 @@ func Download(rawurl string, fragments int, savepath string) error {
 
 		errg.Go(
 			func() error {
-				return DownloadFragment(rawurl, fragmentPath, from, to)
+				select {
+				case <-ctx.Done():
+					log.Println("Context canceled")
+					return ctx.Err()
+				default:
+					return DownloadFragment(ctx, rawurl, fragmentPath, from, to)
+				}
 			})
 	}
 	if err := errg.Wait(); err != nil {
+		close(signalCh)
+		cancel()
+		CleanTempDir()
 		return err
 	}
+	close(signalCh)
 
 	spentTime := float32((time.Now().Sub(startAt))/time.Millisecond) / 1000
 	Mbps := float32(fileSize) * 8 / spentTime / 1000000
@@ -108,7 +132,7 @@ func Download(rawurl string, fragments int, savepath string) error {
 
 // DownloadFragment download specified URL in the range
 // returns downloaded bytes
-func DownloadFragment(url, filepath string, from, to int64) error {
+func DownloadFragment(ctx context.Context, url, filepath string, from, to int64) error {
 
 	fmt.Printf("Downloading %d - %d: %s\n", from, to, filepath)
 	startAt := time.Now()
@@ -117,6 +141,7 @@ func DownloadFragment(url, filepath string, from, to int64) error {
 	if err != nil {
 		return err
 	}
+	req = req.WithContext(ctx)
 
 	if from < to {
 		req.Header.Add("Range", fmt.Sprintf("bytes=%d-%d", from, to))
@@ -129,7 +154,7 @@ func DownloadFragment(url, filepath string, from, to int64) error {
 	bytes, err := WriteFile(filepath, res.Body, os.O_WRONLY|os.O_TRUNC|os.O_CREATE)
 
 	if bytes != to-from+1 {
-		return fmt.Errorf("file size doen not match with expected %d byte; actual %d byte", to-from+1, bytes)
+		return fmt.Errorf("file size does not match with expected %d byte; actual %d byte", to-from+1, bytes)
 	}
 
 	spentTime := float32((time.Now().Sub(startAt))/time.Millisecond) / 1000
@@ -155,6 +180,11 @@ func WriteFile(filepath string, content io.Reader, fileflag int) (int64, error) 
 
 // Concatenate combines source files into one destination file
 func Concatenate(srcs []string, dst string) error {
+
+	if _, err := os.Stat(dst); err == nil {
+		now := time.Now().Unix()
+		dst = fmt.Sprintf("%s.%d", dst, now)
+	}
 
 	for _, src := range srcs {
 		reader, err := os.Open(src)
