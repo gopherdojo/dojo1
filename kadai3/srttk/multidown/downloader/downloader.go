@@ -56,16 +56,16 @@ func getFileName(resourceUrl string) string {
 }
 
 func (d *Downloader) Download() error {
-	grp := errgroup.Group{}
+	eg := errgroup.Group{}
 
 	for _, worker := range d.Workers {
 		w := worker
-		grp.Go(func() error {
+		eg.Go(func() error {
 			return w.Request()
 		})
 	}
 	// wait for Assignment method
-	if err := grp.Wait(); err != nil {
+	if err := eg.Wait(); err != nil {
 		return err
 	}
 	return nil
