@@ -7,7 +7,6 @@ import (
 	"time"
 	"math/rand"
 	"encoding/json"
-	_ "net/http/pprof"
 )
 
 type Route struct {

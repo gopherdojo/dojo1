@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"fmt"
 )
 
 const timeformat = "2006-01-02 15:04:06"
@@ -46,7 +45,6 @@ func TestGetOmikujiain(t *testing.T) {
 
 	if rw.StatusCode != http.StatusOK { t.Fatal("unexpected status code") }
 	b, err = ioutil.ReadAll(rw.Body)
-	fmt.Println(string(b))
 	if err != nil { t.Fatal("unexpected error") }
 	const expected2 = "{\"omikuji\":\"吉\"}"
 	if s := string(b); !assert.JSONEq(t, s, expected2) { t.Fatalf("unexpected response: %s", s) }
