@@ -18,34 +18,39 @@ func setNow(t time.Time) {
 
 func TestGetOmikujiain(t *testing.T) {
 	syogatsu , _ := time.Parse(timeformat, "2018-01-03 14:10:00")
-	setNow(syogatsu)
+	heijitu , _ := time.Parse(timeformat, "2018-02-03 14:10:00")
+	heijitu2 , _ := time.Parse(timeformat, "2018-03-03 18:11:11")
 
-	w := httptest.NewRecorder()
-	r := httptest.NewRequest("GET", "/api/v1/omikuji", nil)
-	GetOmikuji(w, r)
-	rw := w.Result()
-	defer rw.Body.Close()
+	cases := []struct {
+		date      time.Time
+		responce string
+	}{
+		{date: syogatsu, responce: "{\"omikuji\":\"大吉\"}"},
+		{date: heijitu, responce: "{\"omikuji\":\"吉\"}"},
+		{date: heijitu2, responce: "{\"omikuji\":\"中吉\"}"},
 
-	if rw.StatusCode != http.StatusOK { t.Fatal("unexpected status code") }
-	b, err := ioutil.ReadAll(rw.Body)
-	if err != nil { t.Fatal("unexpected error") }
-	const expected = "{\"omikuji\":\"大吉\"}"
-	if s := string(b); !assert.JSONEq(t, s, expected) { t.Fatalf("unexpected response: %s", s) }
+	}
 
+	for _, c := range cases {
+		setNow(c.date)
 
-	//吉がでるseed
-	date , _ := time.Parse(timeformat, "2018-02-03 14:10:00")
-	setNow(date)
+		w := httptest.NewRecorder()
+		r := httptest.NewRequest("GET", "/api/v1/omikuji", nil)
+		GetOmikuji(w, r)
+		rw := w.Result()
+		defer rw.Body.Close()
 
-	w = httptest.NewRecorder()
-	r = httptest.NewRequest("GET", "/api/v1/omikuji", nil)
-	GetOmikuji(w, r)
-	rw = w.Result()
-	defer rw.Body.Close()
+		if rw.StatusCode != http.StatusOK {
+			t.Fatal("unexpected status code")
+		}
+		b, err := ioutil.ReadAll(rw.Body)
+		if err != nil {
+			t.Fatal("unexpected error")
+		}
 
-	if rw.StatusCode != http.StatusOK { t.Fatal("unexpected status code") }
-	b, err = ioutil.ReadAll(rw.Body)
-	if err != nil { t.Fatal("unexpected error") }
-	const expected2 = "{\"omikuji\":\"吉\"}"
-	if s := string(b); !assert.JSONEq(t, s, expected2) { t.Fatalf("unexpected response: %s", s) }
+		if s := string(b); !assert.JSONEq(t, s, c.responce) {
+			t.Fatalf("unexpected response: %s", s)
+		}
+
+	}
 }
