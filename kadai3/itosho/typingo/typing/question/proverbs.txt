@@ -1,0 +1,9 @@
+small is beautiful
+make each program do one thing well
+build a prototype as soon as possible
+choose portability over efficiency
+store data in flat text files
+use software leverage to your advantage
+use shell scripts to increase leverage and portability
+avoid captive user interfaces
+make every program a filter
