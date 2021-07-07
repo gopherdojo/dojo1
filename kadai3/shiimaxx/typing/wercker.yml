@@ -1,0 +1,9 @@
+box: golang
+build:
+  steps:
+    - wercker/setup-go-workspace:
+      package-dir: github.com/shiimaxx/typing-game
+    - golint
+    - script:
+      name: "go test"
+      code: "go test"
