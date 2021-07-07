@@ -1,0 +1,16 @@
+use 'godoc cmd/github.com/shiimaxx/image-convert/converter' for documentation on the github.com/shiimaxx/image-convert/converter command 
+
+PACKAGE DOCUMENTATION
+
+package converter
+    import "github.com/shiimaxx/image-convert/converter"
+
+    Package converter provides image convert. support fomat GIF, JPEG and
+    PNG.
+
+FUNCTIONS
+
+func Convert(filename, destExt string) error
+    Convert convert image to destExt
+
+

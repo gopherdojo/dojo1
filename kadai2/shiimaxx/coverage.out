@@ -1,0 +1,27 @@
+mode: set
+github.com/shiimaxx/image-convert/cli.go:26.59,29.81 3 1
+github.com/shiimaxx/image-convert/cli.go:38.2,38.16 1 1
+github.com/shiimaxx/image-convert/cli.go:41.2,41.24 1 1
+github.com/shiimaxx/image-convert/cli.go:29.81,30.17 1 1
+github.com/shiimaxx/image-convert/cli.go:33.3,33.39 1 1
+github.com/shiimaxx/image-convert/cli.go:36.3,36.13 1 1
+github.com/shiimaxx/image-convert/cli.go:30.17,32.4 1 0
+github.com/shiimaxx/image-convert/cli.go:33.39,35.4 1 1
+github.com/shiimaxx/image-convert/cli.go:38.16,40.3 1 0
+github.com/shiimaxx/image-convert/cli.go:45.38,61.46 9 1
+github.com/shiimaxx/image-convert/cli.go:65.2,65.13 1 1
+github.com/shiimaxx/image-convert/cli.go:70.2,70.27 1 1
+github.com/shiimaxx/image-convert/cli.go:75.2,77.24 3 1
+github.com/shiimaxx/image-convert/cli.go:81.2,81.20 1 1
+github.com/shiimaxx/image-convert/cli.go:86.2,87.16 2 1
+github.com/shiimaxx/image-convert/cli.go:92.2,92.31 1 1
+github.com/shiimaxx/image-convert/cli.go:100.2,100.19 1 1
+github.com/shiimaxx/image-convert/cli.go:61.46,63.3 1 0
+github.com/shiimaxx/image-convert/cli.go:65.13,68.3 2 1
+github.com/shiimaxx/image-convert/cli.go:70.27,73.3 2 1
+github.com/shiimaxx/image-convert/cli.go:77.24,80.3 2 1
+github.com/shiimaxx/image-convert/cli.go:81.20,84.3 2 1
+github.com/shiimaxx/image-convert/cli.go:87.16,90.3 2 0
+github.com/shiimaxx/image-convert/cli.go:92.31,94.17 2 1
+github.com/shiimaxx/image-convert/cli.go:94.17,97.4 2 0
+github.com/shiimaxx/image-convert/main.go:5.13,8.2 2 0
